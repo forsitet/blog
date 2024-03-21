@@ -1,0 +1,20 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+    {% if sent %}
+        <h1>E-mail succesfully sent</h1>
+
+        <p>
+            "{{post.title}}" was succesfully sent
+            to {{form.cleaned_data.to}}.
+        </p>
+    {% else %}
+    <h1>Share "{{  post.title  }}" by e-mail</h1>
+    <form method="post">
+        {{  form.as_p  }}
+        {% comment %} Экземпляр формы вствляется при помощи этого тега, а егополя прорисовываются тегом p html {% endcomment %}
+        {% csrf_token %}
+        <input type="submit" value="Send e-mail">
+    </form>
+    {% endif %}
+{% endblock  %}
