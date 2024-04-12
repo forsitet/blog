@@ -12,3 +12,9 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment #Создаём форму из модели
         fields = ["name", "email", "body"]
+
+
+class SearchForm(forms.Form):
+    query = forms.CharField()
+
+    
