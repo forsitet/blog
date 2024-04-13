@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.views.decorators.http import require_POST
 from taggit.models import Tag
 from django.db.models import Count 
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 
 class PostListView(ListView):
     """
@@ -124,13 +124,9 @@ def post_search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data["query"]
-            search_vector = SearchVector("title", weight = "A", config="russian") + \
-            SearchVector("body", weight = "B", config="russian")
-            search_query = SearchQuery(query, config="russian") # Выделяет основу слова
             results = Post.published.annotate(
-                search=search_vector,
-                rank=SearchRank(search_vector, search_query)
-            ).filter(rank__gte=0.3).order_by("-rank") #ранжируем посты
+               similarity = TrigramSimilarity("title", query),
+            ).filter(similarity__gt=0.1).order_by("-similarity")
 
 
     return render(request,
